@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 25.0.1706.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "journey-jot", "journey-jot\journey-jot.csproj", "{079BA2C3-7A6F-4CE3-A2BF-56AA1E8287DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JourneyJot", "JourneyJot\JourneyJot.csproj", "{EF183311-9C72-48D5-A648-DB13F797BB75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{079BA2C3-7A6F-4CE3-A2BF-56AA1E8287DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{079BA2C3-7A6F-4CE3-A2BF-56AA1E8287DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{079BA2C3-7A6F-4CE3-A2BF-56AA1E8287DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{079BA2C3-7A6F-4CE3-A2BF-56AA1E8287DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF183311-9C72-48D5-A648-DB13F797BB75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF183311-9C72-48D5-A648-DB13F797BB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF183311-9C72-48D5-A648-DB13F797BB75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF183311-9C72-48D5-A648-DB13F797BB75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {C95E2D2F-60FC-4314-90C5-250A477FCB7D}
+		SolutionGuid = {15C4084C-C670-45DC-8648-1A78247B8AFD}
 	EndGlobalSection
 EndGlobal
