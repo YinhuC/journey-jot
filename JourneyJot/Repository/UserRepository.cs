@@ -11,7 +11,7 @@ namespace JourneyJot.Repository
 
         public UserRepository(DataContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         public void Add(User entity)

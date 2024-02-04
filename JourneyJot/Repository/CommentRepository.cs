@@ -11,7 +11,7 @@ namespace JourneyJot.Repository
 
         public CommentRepository(DataContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         public void Add(Comment entity)

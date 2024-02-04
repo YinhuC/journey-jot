@@ -12,7 +12,7 @@ namespace JourneyJot.Repository
 
         public PostRepository(DataContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         public void Add(Post entity)
