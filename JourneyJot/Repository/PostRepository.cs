@@ -27,12 +27,12 @@ namespace JourneyJot.Repository
 
         public IEnumerable<Post> GetAll()
         {
-            throw new NotImplementedException();
+            return _context.Posts.ToList();
         }
 
-        public Post GetById(int id)
+        public Post GetById(Guid id)
         {
-            throw new NotImplementedException();
+            return _context.Posts.Where(u => u.Id == id).FirstOrDefault();
         }
 
         public void Update(Post entity)

@@ -5,7 +5,7 @@ namespace JourneyJot.Intefaces
 {
     public interface IRepository<T>
     {
-        T GetById(int id);
+        T GetById(Guid id);
 
         IEnumerable<T> GetAll();
 

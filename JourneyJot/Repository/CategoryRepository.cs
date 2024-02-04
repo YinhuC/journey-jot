@@ -26,12 +26,12 @@ namespace JourneyJot.Repository
 
         public IEnumerable<Category> GetAll()
         {
-            throw new NotImplementedException();
+            return _context.Categories.ToList();
         }
 
-        public Category GetById(int id)
+        public Category GetById(Guid id)
         {
-            throw new NotImplementedException();
+            return _context.Categories.Where(u => u.Id == id).FirstOrDefault();
         }
 
         public void Update(Category entity)

@@ -21,8 +21,14 @@ namespace JourneyJot.Data
 
         public DbSet<Tag> Tags { get; set; }
 
+        public DbSet<PostCategory> PostCategories { get; set; }
+
+        public DbSet<PostTag> PostTags { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Many to many posts and categories
             modelBuilder.Entity<PostCategory>()
                 .HasKey(pc => new { pc.PostId, pc.CategoryId });
             modelBuilder.Entity<PostCategory>()
@@ -34,6 +40,7 @@ namespace JourneyJot.Data
                 .WithMany(pc => pc.PostCategories)
                 .HasForeignKey(c => c.CategoryId);
 
+            // Many to many posts and tags
             modelBuilder.Entity<PostTag>()
                 .HasKey(pt => new { pt.PostId, pt.TagId });
             modelBuilder.Entity<PostTag>()
@@ -44,6 +51,7 @@ namespace JourneyJot.Data
                 .HasOne(p => p.Tag)
                 .WithMany(pt => pt.PostTags)
                 .HasForeignKey(t => t.TagId);
+
         }
 
     }

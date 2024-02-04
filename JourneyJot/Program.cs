@@ -1,4 +1,5 @@
-﻿using JourneyJot.Data;
+﻿using JourneyJot;
+using JourneyJot.Data;
 using JourneyJot.Intefaces;
 using JourneyJot.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 {
     // Add services to the container.
     builder.Services.AddControllers();
+
+    // Populate data base
+    builder.Services.AddTransient<Seed>();
 
     // Wire up dependency injection
     builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -44,5 +48,18 @@ var app = builder.Build();
 }
 
 
+
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+    SeedData(app);
+void SeedData(IHost app)
+{
+    var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
+
+    using (var scope = scopedFactory.CreateScope())
+    {
+        var service = scope.ServiceProvider.GetService<Seed>();
+        service.SeedDataContext();
+    }
+}
 
 

@@ -26,12 +26,12 @@ namespace JourneyJot.Repository
 
         public IEnumerable<User> GetAll()
         {
-            throw new NotImplementedException();
+            return _context.Users.ToList();
         }
 
-        public User GetById(int id)
+        public User GetById(Guid id)
         {
-            throw new NotImplementedException();
+            return _context.Users.Where(u => u.Id == id).FirstOrDefault();
         }
 
         public void Update(User entity)
