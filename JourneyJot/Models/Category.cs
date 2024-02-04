@@ -9,15 +9,13 @@ namespace JourneyJot.Models
 
         public string Name { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<Post> Posts { get; set; }
-
-        public ICollection<PostCategory> PostCategories { get; set; }
+        public ICollection<PostCategory>? PostCategories { get; set; }
 
     }
 }

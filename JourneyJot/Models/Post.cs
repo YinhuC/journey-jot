@@ -7,6 +7,8 @@ namespace JourneyJot.Models
     {
         public Guid Id { get; set; }
 
+        public Guid AuthorId { get; set; }
+
         public User Author { get; set; }
 
         public DateTime CreatedAt { get; set; }
@@ -17,15 +19,11 @@ namespace JourneyJot.Models
 
         public string Content { get; set; }
 
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Comment>? Comments { get; set; }
 
-        public ICollection<Category> Categories { get; set; }
+        public ICollection<PostCategory>? PostCategories { get; set; }
 
-        public ICollection<Tag> Tags { get; set; }
-
-        public ICollection<PostCategory> PostCategories { get; set; }
-
-        public ICollection<PostTag> PostTags { get; set; }
+        public ICollection<PostTag>? PostTags { get; set; }
 
     }
 }

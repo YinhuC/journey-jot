@@ -13,9 +13,7 @@ namespace JourneyJot.Models
 
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<Post> Posts { get; set; }
-
-        public ICollection<PostTag> PostTags { get; set; }
+        public ICollection<PostTag>? PostTags { get; set; }
 
     }
 }

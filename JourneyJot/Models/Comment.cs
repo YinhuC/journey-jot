@@ -7,6 +7,8 @@ namespace JourneyJot.Models
     {
         public Guid Id { get; set; }
 
+        public Guid AuthorId { get; set; }
+
         public User Author { get; set; }
 
         public DateTime CreatedAt { get; set; }
@@ -14,8 +16,6 @@ namespace JourneyJot.Models
         public DateTime UpdatedAt { get; set; }
 
         public string Content { get; set; }
-
-        public Post Post { get; set; }
 
     }
 }
