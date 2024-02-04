@@ -15,6 +15,8 @@ namespace JourneyJot.Intefaces
 
         void Delete(T entity);
 
+        bool Exists(Guid id);
+
     }
 }
 

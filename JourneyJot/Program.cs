@@ -12,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
     // Populate data base
     builder.Services.AddTransient<Seed>();
 
+    // Set up auto mapper for dtos
+    builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
     // Wire up dependency injection
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IPostRepository, PostRepository>();

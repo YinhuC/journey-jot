@@ -24,6 +24,11 @@ namespace JourneyJot.Repository
             throw new NotImplementedException();
         }
 
+        public bool Exists(Guid id)
+        {
+            return _context.Categories.Any(c => c.Id == id);
+        }
+
         public IEnumerable<Category> GetAll()
         {
             return _context.Categories.ToList();
