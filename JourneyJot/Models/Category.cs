@@ -17,6 +17,8 @@ namespace JourneyJot.Models
 
         public ICollection<Post> Posts { get; set; }
 
+        public ICollection<PostCategory> PostCategories { get; set; }
+
     }
 }
 
