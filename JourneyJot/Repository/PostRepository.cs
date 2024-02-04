@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Intrinsics.Arm;
 using JourneyJot.Data;
 using JourneyJot.Intefaces;
 using JourneyJot.Models;
@@ -15,12 +16,12 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public void Add(Post entity)
+        public bool Add(Post entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(Post entity)
+        public bool Delete(Post entity)
         {
             throw new NotImplementedException();
         }
@@ -37,10 +38,40 @@ namespace JourneyJot.Repository
 
         public Post GetById(Guid id)
         {
-            return _context.Posts.Where(u => u.Id == id).FirstOrDefault();
+            return _context.Posts.Where(p => p.Id == id).FirstOrDefault();
         }
 
-        public void Update(Post entity)
+        public IEnumerable<Comment> GetPostComments(Guid postId)
+        {
+            return _context.Posts.Where(p => p.Id == postId).SelectMany(p => p.Comments).ToList();
+        }
+
+        public IEnumerable<Category> GetPostCategories(Guid postId)
+        {
+            return _context.PostCategories.Where(pc => pc.Post.Id == postId).Select(pc => pc.Category).ToList();
+        }
+
+        public IEnumerable<Tag> GetPostTags(Guid postId)
+        {
+            return _context.PostTags.Where(pt => pt.Post.Id == postId).Select(pt => pt.Tag).ToList();
+        }
+
+        public bool Update(Post entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IRepository<Post>.Add(Post entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IRepository<Post>.Delete(Post entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IRepository<Post>.Update(Post entity)
         {
             throw new NotImplementedException();
         }

@@ -14,12 +14,12 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public void Add(Comment entity)
+        public bool Add(Comment entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(Comment entity)
+        public bool Delete(Comment entity)
         {
             throw new NotImplementedException();
         }
@@ -39,7 +39,7 @@ namespace JourneyJot.Repository
             return _context.Comments.Where(u => u.Id == id).FirstOrDefault();
         }
 
-        public void Update(Comment entity)
+        public bool Update(Comment entity)
         {
             throw new NotImplementedException();
         }

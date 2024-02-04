@@ -9,11 +9,11 @@ namespace JourneyJot.Intefaces
 
         IEnumerable<T> GetAll();
 
-        void Add(T entity);
+        bool Add(T entity);
 
-        void Update(T entity);
+        bool Update(T entity);
 
-        void Delete(T entity);
+        bool Delete(T entity);
 
         bool Exists(Guid id);
 

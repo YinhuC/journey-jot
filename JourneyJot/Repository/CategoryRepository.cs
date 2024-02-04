@@ -14,12 +14,12 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public void Add(Category entity)
+        public bool Add(Category entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(Category entity)
+        public bool Delete(Category entity)
         {
             throw new NotImplementedException();
         }
@@ -39,7 +39,12 @@ namespace JourneyJot.Repository
             return _context.Categories.Where(u => u.Id == id).FirstOrDefault();
         }
 
-        public void Update(Category entity)
+        public IEnumerable<Post> GetPostsByCategory(Guid categoryId)
+        {
+            return _context.PostCategories.Where(pc => pc.Category.Id == categoryId).Select(pc => pc.Post).ToList();
+        }
+
+        public bool Update(Category entity)
         {
             throw new NotImplementedException();
         }

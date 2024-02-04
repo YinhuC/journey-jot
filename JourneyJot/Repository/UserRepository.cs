@@ -14,12 +14,12 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public void Add(User entity)
+        public bool Add(User entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(User entity)
+        public bool Delete(User entity)
         {
             throw new NotImplementedException();
         }
@@ -34,12 +34,32 @@ namespace JourneyJot.Repository
             return _context.Users.ToList();
         }
 
+        public User GetByEmail(string email)
+        {
+            return _context.Users.Where(u => u.Email == email).FirstOrDefault();
+        }
+
         public User GetById(Guid id)
         {
             return _context.Users.Where(u => u.Id == id).FirstOrDefault();
         }
 
-        public void Update(User entity)
+        public User GetByUsername(string username)
+        {
+            return _context.Users.Where(u => u.Username == username).FirstOrDefault();
+        }
+
+        public IEnumerable<Comment> GetCommentsByUser(Guid id)
+        {
+            return _context.Users.Where(u => u.Id == id).SelectMany(u => u.Comments).ToList();
+        }
+
+        public IEnumerable<Post> GetPostsByUser(Guid id)
+        {
+            return _context.Users.Where(u => u.Id == id).SelectMany(u => u.Posts).ToList();
+        }
+
+        public bool Update(User entity)
         {
             throw new NotImplementedException();
         }

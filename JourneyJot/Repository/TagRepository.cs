@@ -14,12 +14,12 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public void Add(Tag entity)
+        public bool Add(Tag entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(Tag entity)
+        public bool Delete(Tag entity)
         {
             throw new NotImplementedException();
         }
@@ -39,7 +39,12 @@ namespace JourneyJot.Repository
             return _context.Tags.Where(u => u.Id == id).FirstOrDefault();
         }
 
-        public void Update(Tag entity)
+        public IEnumerable<Post> GetPostByTag(Guid tagId)
+        {
+            return _context.PostTags.Where(pt => pt.Tag.Id == tagId).Select(pt => pt.Post).ToList();
+        }
+
+        public bool Update(Tag entity)
         {
             throw new NotImplementedException();
         }

@@ -5,6 +5,7 @@ namespace JourneyJot.Intefaces
 {
     public interface ICategoryRepository: IRepository<Category>
     {
+        IEnumerable<Post> GetPostsByCategory(Guid categoryId);
     }
 }
 

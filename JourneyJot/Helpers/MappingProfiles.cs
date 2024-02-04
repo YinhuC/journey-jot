@@ -9,6 +9,15 @@ namespace JourneyJot.Helpers
         public MappingProfiles()
         {
             CreateMap<User, UserDto>();
+
+            CreateMap<Post, PostDto>();
+
+            CreateMap<Comment, CommentDto>();
+
+            CreateMap<Category, CategoryDto>();
+
+            CreateMap<Tag, TagDto>();
+
         }
     }
 }
