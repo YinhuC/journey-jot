@@ -12,12 +12,20 @@ namespace JourneyJot.Controllers
     {
         private readonly IPostRepository _postRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly ITagRepository _tagRepository;
         private readonly IMapper _mapper;
 
-        public PostController(IPostRepository postRepository, IUserRepository userRepository ,IMapper mapper)
+        public PostController(IPostRepository postRepository, 
+            IUserRepository userRepository,
+            ICategoryRepository categoryRepository,
+            ITagRepository tagRepository,
+            IMapper mapper)
         {
             _postRepository = postRepository;
             _userRepository = userRepository;
+            _categoryRepository = categoryRepository;
+            _tagRepository = tagRepository;
             _mapper = mapper;
         }
 
@@ -105,15 +113,61 @@ namespace JourneyJot.Controllers
             if (postDtoCreate == null)
                 return BadRequest(ModelState);
 
+            // Check user exists
             if (!(Guid.TryParse(postDtoCreate.AuthorId, out var uid) && _userRepository.Exists(uid)))
             {
                 ModelState.AddModelError("", "User does not exist");
                 return StatusCode(404, ModelState);
             }
+
+            // Check categories and tags exist
+            var invalidCategories = postDtoCreate.Categories.Where(cname => !_categoryRepository.ExistsByName(cname));
+            if (invalidCategories.Any())
+            {
+                ModelState.AddModelError("InvalidCategories", "One or more categories do not exist");
+                ModelState.AddModelError("InvalidCategoriesList", string.Join(",", invalidCategories));
+                return StatusCode(404, ModelState);
+            }
+            var invalidTags = postDtoCreate.Tags.Where(tname => !_tagRepository.ExistsByName(tname));
+            Console.Write(postDtoCreate.Tags);
+            Console.Write(invalidTags);
+            if (invalidTags.Any())
+            {
+                ModelState.AddModelError("InvalidTags", "One or more tags do not exist");
+                ModelState.AddModelError("InvalidTagsList", string.Join(",", invalidTags));
+                return StatusCode(404, ModelState);
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var post = _mapper.Map<Post>(postDtoCreate);
+
+            // Add PostCategories
+            ICollection<PostCategory> postCategoryList = new List<PostCategory>();
+            foreach (var cname in postDtoCreate.Categories)
+            {
+                var postCategory = new PostCategory()
+                {
+                    Post = post,
+                    Category = _categoryRepository.GetCategoryByName(cname)
+                };
+                postCategoryList.Add(postCategory);
+            }
+            post.PostCategories = postCategoryList;
+
+            // Add PostTags
+            ICollection<PostTag> postTagList = new List<PostTag>();
+            foreach (var tname in postDtoCreate.Tags)
+            {
+                var postTag = new PostTag()
+                {
+                    Post = post,
+                    Tag = _tagRepository.GetTagByName(tname)
+                };
+                postTagList.Add(postTag);
+            }
+            post.PostTags = postTagList;
 
             if (!_postRepository.Create(post))
             {

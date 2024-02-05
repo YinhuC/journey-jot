@@ -40,6 +40,11 @@ namespace JourneyJot.Repository
             return _context.Tags.Any(t => t.Id == id);
         }
 
+        public bool ExistsByName(string name)
+        {
+            return _context.Tags.Any(t => t.Name == name);
+        }
+
         public bool Create(Tag entity)
         {
             _context.Add(entity);

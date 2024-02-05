@@ -8,6 +8,8 @@ namespace JourneyJot.Intefaces
         IEnumerable<Post> GetPostsByCategory(Guid categoryId);
 
         Category GetCategoryByName(string name);
+
+        bool ExistsByName(string name);
     }
 }
 

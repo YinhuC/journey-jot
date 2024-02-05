@@ -39,6 +39,11 @@ namespace JourneyJot.Repository
             return _context.Categories.Any(c => c.Id == id);
         }
 
+        public bool ExistsByName(string name)
+        {
+            return _context.Categories.Any(c => c.Name == name);
+        }
+
         public bool Create(Category entity)
         {
             _context.Add(entity);
