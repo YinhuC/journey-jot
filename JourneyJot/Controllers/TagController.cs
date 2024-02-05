@@ -88,7 +88,7 @@ namespace JourneyJot.Controllers
 
             if (!_tagRepository.Create(tag))
             {
-                ModelState.AddModelError("", "Error while persisting to databse");
+                ModelState.AddModelError("", "Error while creating tag");
                 return StatusCode(500, ModelState);
             }
 
@@ -115,7 +115,29 @@ namespace JourneyJot.Controllers
 
             if (!_tagRepository.Update(tag))
             {
-                ModelState.AddModelError("", "Error while persisting to database");
+                ModelState.AddModelError("", "Error while updating tag");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{tagId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteTag(string tagId)
+        {
+            if (!(Guid.TryParse(tagId, out var guid) && _tagRepository.Exists(guid)))
+                return NotFound();
+
+            var tag = _tagRepository.GetById(guid);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_tagRepository.Delete(tag))
+            {
+                ModelState.AddModelError("", "Error while deleting tag");
                 return StatusCode(500, ModelState);
             }
 

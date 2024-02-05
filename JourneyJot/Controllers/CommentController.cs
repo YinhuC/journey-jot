@@ -81,7 +81,7 @@ namespace JourneyJot.Controllers
 
             if (!_commentRepository.Create(comment))
             {
-                ModelState.AddModelError("", "Error while persisting to databse");
+                ModelState.AddModelError("", "Error while creating comment");
                 return StatusCode(500, ModelState);
             }
 
@@ -116,7 +116,41 @@ namespace JourneyJot.Controllers
 
             if (!_commentRepository.Update(comment))
             {
-                ModelState.AddModelError("", "Error while persisting to database");
+                ModelState.AddModelError("", "Error while updating comment");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{commentId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteComment(string commentId, [FromQuery] string authorId)
+        {
+            if (!(Guid.TryParse(commentId, out var guid) && _commentRepository.Exists(guid)))
+                return NotFound();
+
+            if (!(Guid.TryParse(authorId, out var userId) && _userRepository.Exists(userId)))
+            {
+                ModelState.AddModelError("", "User Not Found");
+                return StatusCode(404, ModelState);
+            }
+            var comment = _commentRepository.GetById(guid);
+
+            if (comment.AuthorId != userId)
+            {
+                ModelState.AddModelError("", "Forbidden action");
+                return StatusCode(403, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_commentRepository.Delete(comment))
+            {
+                ModelState.AddModelError("", "Error while deleting comment");
                 return StatusCode(500, ModelState);
             }
 

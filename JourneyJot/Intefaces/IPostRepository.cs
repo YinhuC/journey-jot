@@ -11,6 +11,8 @@ namespace JourneyJot.Intefaces
 
         IEnumerable<Tag> GetPostTags(Guid postId);
 
+        bool DeletePosts(IEnumerable<Post> posts);
+
     }
 }
 

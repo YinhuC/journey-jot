@@ -87,7 +87,7 @@ namespace JourneyJot.Controllers
 
             if (!_categoryRepository.Create(category))
             {
-                ModelState.AddModelError("", "Error while persisting to databse");
+                ModelState.AddModelError("", "Error while creating category");
                 return StatusCode(500, ModelState);
             }
 
@@ -115,7 +115,29 @@ namespace JourneyJot.Controllers
 
             if (!_categoryRepository.Update(category))
             {
-                ModelState.AddModelError("", "Error while persisting to database");
+                ModelState.AddModelError("", "Error while updating category");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{categoryId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteCategory(string categoryId)
+        {
+            if (!(Guid.TryParse(categoryId, out var guid) && _categoryRepository.Exists(guid)))
+                return NotFound();
+
+            var category = _categoryRepository.GetById(guid);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_categoryRepository.Delete(category))
+            {
+                ModelState.AddModelError("", "Error while deleting category");
                 return StatusCode(500, ModelState);
             }
 

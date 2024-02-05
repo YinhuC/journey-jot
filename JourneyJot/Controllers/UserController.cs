@@ -12,11 +12,18 @@ namespace JourneyJot.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPostRepository _postRepository;
+        private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
 
-        public UserController(IUserRepository userRepository, IMapper mapper)
+        public UserController(IUserRepository userRepository,
+            IPostRepository postRepository,
+            ICommentRepository commentRepository,
+            IMapper mapper)
         {
             _userRepository = userRepository;
+            _postRepository = postRepository;
+            _commentRepository = commentRepository;
             _mapper = mapper;
         }
 
@@ -109,7 +116,7 @@ namespace JourneyJot.Controllers
 
             if (!_userRepository.Create(user))
             {
-                ModelState.AddModelError("", "Error while persisting to database");
+                ModelState.AddModelError("", "Error while creating user");
                 return StatusCode(500, ModelState);
             }
 
@@ -136,7 +143,37 @@ namespace JourneyJot.Controllers
 
             if (!_userRepository.Update(user))
             {
-                ModelState.AddModelError("", "Error while persisting to database");
+                ModelState.AddModelError("", "Error while updating user");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{userId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteUser(string userId)
+        {
+            if(!(Guid.TryParse(userId, out var guid) && _userRepository.Exists(guid)))
+                return NotFound();
+
+            var user = _userRepository.GetById(guid);
+            var posts = _userRepository.GetPostsByUser(guid);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+
+            if (posts.Any() && !_postRepository.DeletePosts(posts))
+            {
+                ModelState.AddModelError("", "Error while deleting posts");
+                return StatusCode(500, ModelState);
+
+            }
+            if (!_userRepository.Delete(user))
+            {
+                ModelState.AddModelError("", "Error while deleting user");
                 return StatusCode(500, ModelState);
             }
 

@@ -49,7 +49,14 @@ namespace JourneyJot.Repository
 
         public bool Delete(Comment entity)
         {
-            throw new NotImplementedException();
+            _context.Remove(entity);
+            return Save();
+        }
+
+        public bool DeleteComments(IEnumerable<Comment> comments)
+        {
+            _context.RemoveRange(comments);
+            return Save();
         }
 
         public bool Save()

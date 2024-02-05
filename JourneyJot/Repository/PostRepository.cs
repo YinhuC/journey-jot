@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Intrinsics.Arm;
+using System.Xml.Linq;
 using JourneyJot.Data;
 using JourneyJot.Intefaces;
 using JourneyJot.Models;
@@ -64,13 +65,27 @@ namespace JourneyJot.Repository
 
         public bool Delete(Post entity)
         {
-            throw new NotImplementedException();
+            _context.RemoveRange(entity);
+            return Save();
+        }
+
+        public bool DeletePosts(IEnumerable<Post> posts)
+        {
+            foreach (var post in posts)
+            {
+                var comments = _context.Comments.Where(c => c.PostId == post.Id);
+                _context.Comments.RemoveRange(comments);
+            }
+            _context.Posts.RemoveRange(posts);
+
+            return Save();
         }
 
         public bool Save()
         {
             return _context.SaveChanges() > 0;
         }
+    
     }
 }
 

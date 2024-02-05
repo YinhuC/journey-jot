@@ -17,18 +17,21 @@ namespace JourneyJot.Controllers
         private readonly IUserRepository _userRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ITagRepository _tagRepository;
+        private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
 
         public PostController(IPostRepository postRepository, 
             IUserRepository userRepository,
             ICategoryRepository categoryRepository,
             ITagRepository tagRepository,
+            ICommentRepository commentRepository,
             IMapper mapper)
         {
             _postRepository = postRepository;
             _userRepository = userRepository;
             _categoryRepository = categoryRepository;
             _tagRepository = tagRepository;
+            _commentRepository = commentRepository;
             _mapper = mapper;
         }
 
@@ -172,7 +175,7 @@ namespace JourneyJot.Controllers
 
             if (!_postRepository.Create(post))
             {
-                ModelState.AddModelError("", "Error while persisting to databse");
+                ModelState.AddModelError("", "Error while creating post");
                 return StatusCode(500, ModelState);
             }
 
@@ -267,7 +270,48 @@ namespace JourneyJot.Controllers
 
             if (!_postRepository.Update(post))
             {
-                ModelState.AddModelError("", "Error while persisting to databse");
+                ModelState.AddModelError("", "Error while updating post");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{postId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public IActionResult DeletePost(string postId, [FromQuery] string authorId)
+        {
+            if (!(Guid.TryParse(postId, out var guid) && _postRepository.Exists(guid)))
+                return NotFound();
+
+            if (!(Guid.TryParse(authorId, out var userId) && _userRepository.Exists(userId)))
+            {
+                ModelState.AddModelError("", "User Not Found");
+                return StatusCode(404, ModelState);
+            }
+            var post = _postRepository.GetById(guid);
+            var comments = _postRepository.GetPostComments(guid);
+
+            if (post.AuthorId != userId)
+            {
+                ModelState.AddModelError("", "Forbidden action");
+                return StatusCode(403, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_commentRepository.DeleteComments(comments))
+            {
+                ModelState.AddModelError("", "Error while deleting comments");
+                return StatusCode(500, ModelState);
+            }
+
+            if (!_postRepository.Delete(post))
+            {
+                ModelState.AddModelError("", "Error while deleting post");
                 return StatusCode(500, ModelState);
             }
 
