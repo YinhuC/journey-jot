@@ -68,6 +68,7 @@ namespace JourneyJot.Controllers
         [HttpPost]
         [ProducesResponseType(202)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(422)]
         public IActionResult CreateTag([FromBody] TagDtoCreate tagDtoCreate)
         {
             if (tagDtoCreate == null)
@@ -92,6 +93,33 @@ namespace JourneyJot.Controllers
             }
 
             return Ok("Create Tag Success");
+        }
+
+        [HttpPut("{tagId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateTag([FromBody] TagDtoUpdate tagDtoUpdate, string tagId)
+        {
+            if (tagDtoUpdate == null)
+                return BadRequest(ModelState);
+
+            if (!(Guid.TryParse(tagId, out var guid) && _tagRepository.Exists(guid)))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var tag = _mapper.Map<Tag>(tagDtoUpdate);
+            tag.Id = guid;
+
+            if (!_tagRepository.Update(tag))
+            {
+                ModelState.AddModelError("", "Error while persisting to database");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }

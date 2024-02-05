@@ -51,12 +51,6 @@ namespace JourneyJot.Repository
         {
             entity.Author = _context.Users.Where(u => u.Id == entity.AuthorId).FirstOrDefault();
 
-            if (entity.PostCategories.Any())
-                _context.AddRange(entity.PostCategories);
-
-            if (entity.PostTags.Any())
-                _context.AddRange(entity.PostTags);
-
             _context.Add(entity);
 
             return Save();
@@ -64,7 +58,8 @@ namespace JourneyJot.Repository
 
         public bool Update(Post entity)
         {
-            throw new NotImplementedException();
+            _context.UpdateRange(entity);
+            return Save();
         }
 
         public bool Delete(Post entity)

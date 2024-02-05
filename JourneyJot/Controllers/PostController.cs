@@ -2,7 +2,10 @@
 using JourneyJot.Dto;
 using JourneyJot.Intefaces;
 using JourneyJot.Models;
+using JourneyJot.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 
 namespace JourneyJot.Controllers
 {
@@ -114,23 +117,21 @@ namespace JourneyJot.Controllers
                 return BadRequest(ModelState);
 
             // Check user exists
-            if (!(Guid.TryParse(postDtoCreate.AuthorId, out var uid) && _userRepository.Exists(uid)))
+            if (!(Guid.TryParse(postDtoCreate.AuthorId, out var pid) && _userRepository.Exists(pid)))
             {
                 ModelState.AddModelError("", "User does not exist");
                 return StatusCode(404, ModelState);
             }
 
             // Check categories and tags exist
-            var invalidCategories = postDtoCreate.Categories.Where(cname => !_categoryRepository.ExistsByName(cname));
+            var invalidCategories = postDtoCreate?.Categories?.Where(cname => !_categoryRepository.ExistsByName(cname));
             if (invalidCategories.Any())
             {
                 ModelState.AddModelError("InvalidCategories", "One or more categories do not exist");
                 ModelState.AddModelError("InvalidCategoriesList", string.Join(",", invalidCategories));
                 return StatusCode(404, ModelState);
             }
-            var invalidTags = postDtoCreate.Tags.Where(tname => !_tagRepository.ExistsByName(tname));
-            Console.Write(postDtoCreate.Tags);
-            Console.Write(invalidTags);
+            var invalidTags = postDtoCreate?.Tags?.Where(tname => !_tagRepository.ExistsByName(tname));
             if (invalidTags.Any())
             {
                 ModelState.AddModelError("InvalidTags", "One or more tags do not exist");
@@ -177,5 +178,101 @@ namespace JourneyJot.Controllers
 
             return Ok("Create Post Success");
         }
+
+        [HttpPut("{postId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdatePost([FromBody] PostDtoUpdate postDtoUpdate, string postId)
+        {
+            if (postDtoUpdate == null)
+                return BadRequest(ModelState);
+
+            if (!(Guid.TryParse(postId, out var guid) && _postRepository.Exists(guid)))
+                return NotFound();
+
+            // Check if author id of comment and current author id matches
+            var post = _postRepository.GetById(guid);
+            if (postDtoUpdate.AuthorId != post.AuthorId.ToString())
+            {
+                ModelState.AddModelError("", "Forbidden action");
+                return StatusCode(403, ModelState);
+            }
+
+            if (postDtoUpdate.Categories != null)
+            {
+                var invalidCategories = postDtoUpdate?.Categories?.Where(cname => !_categoryRepository.ExistsByName(cname));
+                if (invalidCategories.Any())
+                {
+                    ModelState.AddModelError("InvalidCategories", "One or more categories do not exist");
+                    ModelState.AddModelError("InvalidCategoriesList", string.Join(",", invalidCategories));
+                    return StatusCode(404, ModelState);
+                }
+                var currCategories = _postRepository.GetPostCategories(guid);
+                // Add PostCategories
+                ICollection<PostCategory> postCategoryList = new List<PostCategory>();
+                foreach (var cname in postDtoUpdate.Categories)
+                {
+                    var category = _categoryRepository.GetCategoryByName(cname);
+                    if (!currCategories.Any(c => c.Id == category.Id))
+                    {
+                        var postCategory = new PostCategory()
+                        {
+                            Post = post,
+                            Category = category
+                        };
+                        postCategoryList.Add(postCategory);
+                    }
+                }
+                post.PostCategories = postCategoryList;
+            }
+
+            if (postDtoUpdate.Tags != null)
+            {
+                var invalidTags = postDtoUpdate?.Tags?.Where(tname => !_tagRepository.ExistsByName(tname));
+                if (invalidTags.Any())
+                {
+                    ModelState.AddModelError("InvalidTags", "One or more tags do not exist");
+                    ModelState.AddModelError("InvalidTagsList", string.Join(",", invalidTags));
+                    return StatusCode(404, ModelState);
+                }
+                var currTags = _postRepository.GetPostTags(guid);
+                // Add PostTags
+                ICollection<PostTag> postTagList = new List<PostTag>();
+                foreach (var tname in postDtoUpdate.Tags)
+                {
+                    var tag = _tagRepository.GetTagByName(tname);
+                    if (!currTags.Any(t => t.Id == tag.Id))
+                    {
+                        var postTag = new PostTag()
+                        {
+                            Post = post,
+                            Tag = tag
+                        };
+                        postTagList.Add(postTag);
+                    }
+                }
+                post.PostTags = postTagList;
+            }
+
+            if (postDtoUpdate.Content != null)
+                post.Content = postDtoUpdate.Content;
+
+            if (postDtoUpdate.Title != null)
+                post.Title = postDtoUpdate.Title;
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_postRepository.Update(post))
+            {
+                ModelState.AddModelError("", "Error while persisting to databse");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
     }
 }

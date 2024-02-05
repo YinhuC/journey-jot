@@ -9,7 +9,7 @@ namespace JourneyJot.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class UserController: Controller
+    public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
@@ -37,7 +37,7 @@ namespace JourneyJot.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetUser(string userId)
         {
-            if(!(Guid.TryParse(userId, out var guid) && _userRepository.Exists(guid)))
+            if (!(Guid.TryParse(userId, out var guid) && _userRepository.Exists(guid)))
                 return NotFound();
 
             var user = _mapper.Map<UserDto>(_userRepository.GetById(guid));
@@ -83,6 +83,7 @@ namespace JourneyJot.Controllers
         [HttpPost]
         [ProducesResponseType(202)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(422)]
         public IActionResult CreateUser([FromBody] UserDtoCreate userDtoCreate)
         {
             if (userDtoCreate == null)
@@ -101,18 +102,45 @@ namespace JourneyJot.Controllers
                 ModelState.AddModelError("", "Email already exists in database");
                 return StatusCode(422, ModelState);
             }
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var  user = _mapper.Map<User>(userDtoCreate);
+            var user = _mapper.Map<User>(userDtoCreate);
 
-            if(!_userRepository.Create(user))
+            if (!_userRepository.Create(user))
             {
-                ModelState.AddModelError("", "Error while persisting to databse");
+                ModelState.AddModelError("", "Error while persisting to database");
                 return StatusCode(500, ModelState);
             }
 
             return Ok("Create User Success");
+        }
+
+        [HttpPut("{userId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateUser([FromBody] UserDtoUpdate userDtoUpdate, string userId)
+        {
+            if (userDtoUpdate == null)
+                return BadRequest(ModelState);
+
+            if (!(Guid.TryParse(userId, out var guid) && _userRepository.Exists(guid)))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = _mapper.Map<User>(userDtoUpdate);
+            user.Id = guid;
+
+            if (!_userRepository.Update(user))
+            {
+                ModelState.AddModelError("", "Error while persisting to database");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
 
     }

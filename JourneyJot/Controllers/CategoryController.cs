@@ -67,6 +67,7 @@ namespace JourneyJot.Controllers
         [HttpPost]
         [ProducesResponseType(202)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(422)]
         public IActionResult CreateCategory([FromBody] CategoryDtoCreate categoryDtoCreate)
         {
             if (categoryDtoCreate == null)
@@ -91,6 +92,34 @@ namespace JourneyJot.Controllers
             }
 
             return Ok("Create Category Success");
+        }
+
+
+        [HttpPut("{categoryId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategory([FromBody] CategoryDtoUpdate categoryDtoUpdate, string categoryId)
+        {
+            if (categoryDtoUpdate == null)
+                return BadRequest(ModelState);
+
+            if (!(Guid.TryParse(categoryId, out var guid) && _categoryRepository.Exists(guid)))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var category = _mapper.Map<Category>(categoryDtoUpdate);
+            category.Id = guid;
+
+            if (!_categoryRepository.Update(category))
+            {
+                ModelState.AddModelError("", "Error while persisting to database");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }

@@ -87,5 +87,40 @@ namespace JourneyJot.Controllers
 
             return Ok("Create Comment Success");
         }
+
+        [HttpPut("{commentId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateComment([FromBody] CommentDtoUpdate commentDtoUpdate, string commentId)
+        {
+            if (commentDtoUpdate == null)
+                return BadRequest(ModelState);
+
+            if (!(Guid.TryParse(commentId, out var guid) && _commentRepository.Exists(guid)))
+                return NotFound();
+
+            // Check if author id of comment and current author id matches
+            var comment = _commentRepository.GetById(guid);
+            if (commentDtoUpdate.AuthorId != comment.AuthorId.ToString())
+            {
+                ModelState.AddModelError("", "Forbidden action");
+                return StatusCode(403, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            comment.Content = commentDtoUpdate.Content;
+
+            if (!_commentRepository.Update(comment))
+            {
+                ModelState.AddModelError("", "Error while persisting to database");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }

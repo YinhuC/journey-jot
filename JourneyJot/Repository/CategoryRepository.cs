@@ -52,7 +52,8 @@ namespace JourneyJot.Repository
 
         public bool Update(Category entity)
         {
-            throw new NotImplementedException();
+            _context.Update(entity);
+            return Save();
         }
 
         public bool Delete(Category entity)

@@ -53,7 +53,8 @@ namespace JourneyJot.Repository
 
         public bool Update(Tag entity)
         {
-            throw new NotImplementedException();
+            _context.Update(entity);
+            return Save();
         }
 
         public bool Delete(Tag entity)

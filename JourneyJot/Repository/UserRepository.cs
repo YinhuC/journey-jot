@@ -55,9 +55,11 @@ namespace JourneyJot.Repository
             _context.Add(entity);
             return Save();
         }
+
         public bool Update(User entity)
         {
-            throw new NotImplementedException();
+            _context.Update(entity);
+            return Save();
         }
 
         public bool Delete(User entity)

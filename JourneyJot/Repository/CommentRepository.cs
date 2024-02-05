@@ -43,7 +43,8 @@ namespace JourneyJot.Repository
 
         public bool Update(Comment entity)
         {
-            throw new NotImplementedException();
+            _context.Update(entity);
+            return Save();
         }
 
         public bool Delete(Comment entity)
