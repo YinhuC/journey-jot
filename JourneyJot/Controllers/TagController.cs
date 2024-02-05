@@ -64,5 +64,34 @@ namespace JourneyJot.Controllers
 
             return Ok(posts);
         }
+
+        [HttpPost]
+        [ProducesResponseType(202)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateTag([FromBody] TagDtoCreate tagDtoCreate)
+        {
+            if (tagDtoCreate == null)
+                return BadRequest(ModelState);
+
+            var name = _tagRepository.GetTagByName(tagDtoCreate.Name);
+
+            if (name != null)
+            {
+                ModelState.AddModelError("", "Tag already exists");
+                return StatusCode(422, ModelState);
+            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var tag = _mapper.Map<Tag>(tagDtoCreate);
+
+            if (!_tagRepository.Create(tag))
+            {
+                ModelState.AddModelError("", "Error while persisting to databse");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Create Tag Success");
+        }
     }
 }

@@ -80,6 +80,41 @@ namespace JourneyJot.Controllers
             return Ok(comments);
         }
 
+        [HttpPost]
+        [ProducesResponseType(202)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateUser([FromBody] UserDtoCreate userDtoCreate)
+        {
+            if (userDtoCreate == null)
+                return BadRequest(ModelState);
+
+            var username = _userRepository.GetByUsername(userDtoCreate.Username);
+            var email = _userRepository.GetByEmail(userDtoCreate.Email);
+
+            if (username != null)
+            {
+                ModelState.AddModelError("", "Username already exists");
+                return StatusCode(422, ModelState);
+            }
+            if (email != null)
+            {
+                ModelState.AddModelError("", "Email already exists in database");
+                return StatusCode(422, ModelState);
+            }
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var  user = _mapper.Map<User>(userDtoCreate);
+
+            if(!_userRepository.Create(user))
+            {
+                ModelState.AddModelError("", "Error while persisting to databse");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Create User Success");
+        }
+
     }
 }
 

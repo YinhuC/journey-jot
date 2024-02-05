@@ -14,20 +14,6 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public bool Add(Comment entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Delete(Comment entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Exists(Guid id)
-        {
-            return _context.Comments.Any(c => c.Id == id);
-        }
 
         public IEnumerable<Comment> GetAll()
         {
@@ -39,9 +25,30 @@ namespace JourneyJot.Repository
             return _context.Comments.Where(u => u.Id == id).FirstOrDefault();
         }
 
+        public bool Exists(Guid id)
+        {
+            return _context.Comments.Any(c => c.Id == id);
+        }
+
+        public bool Create(Comment entity)
+        {
+            _context.Add(entity);
+            return Save();
+        }
+
         public bool Update(Comment entity)
         {
             throw new NotImplementedException();
+        }
+
+        public bool Delete(Comment entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Save()
+        {
+            return _context.SaveChanges() > 0;
         }
     }
 }

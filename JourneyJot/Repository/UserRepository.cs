@@ -14,20 +14,6 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public bool Add(User entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Delete(User entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Exists(Guid id)
-        {
-            return _context.Users.Any(u => u.Id == id);
-        }
 
         public IEnumerable<User> GetAll()
         {
@@ -59,9 +45,29 @@ namespace JourneyJot.Repository
             return _context.Users.Where(u => u.Id == id).SelectMany(u => u.Posts).ToList();
         }
 
+        public bool Exists(Guid id)
+        {
+            return _context.Users.Any(u => u.Id == id);
+        }
+
+        public bool Create(User entity)
+        {
+            _context.Add(entity);
+            return Save();
+        }
         public bool Update(User entity)
         {
             throw new NotImplementedException();
+        }
+
+        public bool Delete(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Save()
+        {
+            return _context.SaveChanges() > 0;
         }
     }
 }

@@ -14,7 +14,38 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public bool Add(Category entity)
+        public IEnumerable<Category> GetAll()
+        {
+            return _context.Categories.ToList();
+        }
+
+        public Category GetById(Guid id)
+        {
+            return _context.Categories.Where(c => c.Id == id).FirstOrDefault();
+        }
+
+        public Category GetCategoryByName(string name)
+        {
+            return _context.Categories.Where(c => c.Name == name).FirstOrDefault();
+        }
+
+        public IEnumerable<Post> GetPostsByCategory(Guid categoryId)
+        {
+            return _context.PostCategories.Where(pc => pc.Category.Id == categoryId).Select(pc => pc.Post).ToList();
+        }
+
+        public bool Exists(Guid id)
+        {
+            return _context.Categories.Any(c => c.Id == id);
+        }
+
+        public bool Create(Category entity)
+        {
+            _context.Add(entity);
+            return Save();
+        }
+
+        public bool Update(Category entity)
         {
             throw new NotImplementedException();
         }
@@ -24,29 +55,9 @@ namespace JourneyJot.Repository
             throw new NotImplementedException();
         }
 
-        public bool Exists(Guid id)
+        public bool Save()
         {
-            return _context.Categories.Any(c => c.Id == id);
-        }
-
-        public IEnumerable<Category> GetAll()
-        {
-            return _context.Categories.ToList();
-        }
-
-        public Category GetById(Guid id)
-        {
-            return _context.Categories.Where(u => u.Id == id).FirstOrDefault();
-        }
-
-        public IEnumerable<Post> GetPostsByCategory(Guid categoryId)
-        {
-            return _context.PostCategories.Where(pc => pc.Category.Id == categoryId).Select(pc => pc.Post).ToList();
-        }
-
-        public bool Update(Category entity)
-        {
-            throw new NotImplementedException();
+            return _context.SaveChanges() > 0;
         }
     }
 }

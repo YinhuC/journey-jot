@@ -14,7 +14,39 @@ namespace JourneyJot.Repository
             _context = context;
         }
 
-        public bool Add(Tag entity)
+
+        public IEnumerable<Tag> GetAll()
+        {
+            return _context.Tags.ToList();
+        }
+
+        public Tag GetById(Guid id)
+        {
+            return _context.Tags.Where(t => t.Id == id).FirstOrDefault();
+        }
+
+        public Tag GetTagByName(string name)
+        {
+            return _context.Tags.Where(t => t.Name == name).FirstOrDefault();
+        }
+
+        public IEnumerable<Post> GetPostByTag(Guid tagId)
+        {
+            return _context.PostTags.Where(pt => pt.Tag.Id == tagId).Select(pt => pt.Post).ToList();
+        }
+
+        public bool Exists(Guid id)
+        {
+            return _context.Tags.Any(t => t.Id == id);
+        }
+
+        public bool Create(Tag entity)
+        {
+            _context.Add(entity);
+            return Save();
+        }
+
+        public bool Update(Tag entity)
         {
             throw new NotImplementedException();
         }
@@ -24,29 +56,9 @@ namespace JourneyJot.Repository
             throw new NotImplementedException();
         }
 
-        public bool Exists(Guid id)
+        public bool Save()
         {
-            return _context.Tags.Any(t => t.Id == id);
-        }
-
-        public IEnumerable<Tag> GetAll()
-        {
-            return _context.Tags.ToList();
-        }
-
-        public Tag GetById(Guid id)
-        {
-            return _context.Tags.Where(u => u.Id == id).FirstOrDefault();
-        }
-
-        public IEnumerable<Post> GetPostByTag(Guid tagId)
-        {
-            return _context.PostTags.Where(pt => pt.Tag.Id == tagId).Select(pt => pt.Post).ToList();
-        }
-
-        public bool Update(Tag entity)
-        {
-            throw new NotImplementedException();
+            return _context.SaveChanges() > 0;
         }
     }
 }

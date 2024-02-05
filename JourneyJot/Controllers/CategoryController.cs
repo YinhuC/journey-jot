@@ -63,5 +63,34 @@ namespace JourneyJot.Controllers
 
             return Ok(posts);
         }
+
+        [HttpPost]
+        [ProducesResponseType(202)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateCategory([FromBody] CategoryDtoCreate categoryDtoCreate)
+        {
+            if (categoryDtoCreate == null)
+                return BadRequest(ModelState);
+
+            var name = _categoryRepository.GetCategoryByName(categoryDtoCreate.Name);
+
+            if (name != null)
+            {
+                ModelState.AddModelError("", "Category already exists");
+                return StatusCode(422, ModelState);
+            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var category = _mapper.Map<Category>(categoryDtoCreate);
+
+            if (!_categoryRepository.Create(category))
+            {
+                ModelState.AddModelError("", "Error while persisting to databse");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Create Category Success");
+        }
     }
 }
