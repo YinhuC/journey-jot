@@ -2,6 +2,7 @@
 using JourneyJot.Dto;
 using JourneyJot.Intefaces;
 using JourneyJot.Models;
+using JourneyJot.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Xml.Linq;
 
@@ -12,11 +13,18 @@ namespace JourneyJot.Controllers
     public class CommentController : Controller
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IPostRepository _postRepository;
         private readonly IMapper _mapper;
 
-        public CommentController(ICommentRepository commentRepository, IMapper mapper)
+        public CommentController(ICommentRepository commentRepository, 
+            IUserRepository userRepository,
+            IPostRepository postRepository,
+            IMapper mapper)
         {
             _commentRepository = commentRepository;
+            _userRepository = userRepository;
+            _postRepository = postRepository;
             _mapper = mapper;
         }
 
@@ -46,6 +54,38 @@ namespace JourneyJot.Controllers
                 return BadRequest(ModelState);
 
             return Ok(comment);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(202)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateComment([FromBody] CommentDtoCreate commentDtoCreate)
+        {
+            if (commentDtoCreate == null)
+                return BadRequest(ModelState);
+
+            if (!(Guid.TryParse(commentDtoCreate.AuthorId, out var uid) && _userRepository.Exists(uid)))
+            {
+                ModelState.AddModelError("", "User does not exist");
+                return StatusCode(404, ModelState);
+            }
+            if (!(Guid.TryParse(commentDtoCreate.PostId, out var pid) && _postRepository.Exists(pid)))
+            {
+                ModelState.AddModelError("", "Post does not exist");
+                return StatusCode(404, ModelState);
+            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var comment = _mapper.Map<Comment>(commentDtoCreate);
+
+            if (!_commentRepository.Create(comment))
+            {
+                ModelState.AddModelError("", "Error while persisting to databse");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Create Comment Success");
         }
     }
 }

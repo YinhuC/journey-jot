@@ -49,7 +49,10 @@ namespace JourneyJot.Repository
 
         public bool Create(Post entity)
         {
-            _context.Posts.Add(entity);
+            entity.Author = _context.Users.Where(u => u.Id == entity.AuthorId).FirstOrDefault();
+
+            _context.Add(entity);
+
             return Save();
         }
 

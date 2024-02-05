@@ -4,7 +4,7 @@ namespace JourneyJot.Dto
 {
     public class PostDtoUpdate
     {
-        public Guid AuthorId { get; set; }
+        public string AuthorId { get; set; }
 
         public string? Title { get; set; }
 

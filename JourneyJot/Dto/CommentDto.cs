@@ -8,6 +8,8 @@ namespace JourneyJot.Dto
 
         public Guid AuthorId { get; set; }
 
+        public Guid PostId { get; set; }
+
         public DateTime UpdatedAt { get; set; }
 
         public string Content { get; set; }

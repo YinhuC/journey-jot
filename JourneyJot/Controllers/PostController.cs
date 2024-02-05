@@ -2,7 +2,6 @@
 using JourneyJot.Dto;
 using JourneyJot.Intefaces;
 using JourneyJot.Models;
-using JourneyJot.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JourneyJot.Controllers
@@ -12,11 +11,13 @@ namespace JourneyJot.Controllers
     public class PostController : Controller
     {
         private readonly IPostRepository _postRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public PostController(IPostRepository postRepository, IMapper mapper)
+        public PostController(IPostRepository postRepository, IUserRepository userRepository ,IMapper mapper)
         {
             _postRepository = postRepository;
+            _userRepository = userRepository;
             _mapper = mapper;
         }
 
@@ -94,6 +95,33 @@ namespace JourneyJot.Controllers
                 return BadRequest(ModelState);
 
             return Ok(tags);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(202)]
+        [ProducesResponseType(400)]
+        public IActionResult CreatePost([FromBody] PostDtoCreate postDtoCreate)
+        {
+            if (postDtoCreate == null)
+                return BadRequest(ModelState);
+
+            if (!(Guid.TryParse(postDtoCreate.AuthorId, out var uid) && _userRepository.Exists(uid)))
+            {
+                ModelState.AddModelError("", "User does not exist");
+                return StatusCode(404, ModelState);
+            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var post = _mapper.Map<Post>(postDtoCreate);
+
+            if (!_postRepository.Create(post))
+            {
+                ModelState.AddModelError("", "Error while persisting to databse");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Create Post Success");
         }
     }
 }

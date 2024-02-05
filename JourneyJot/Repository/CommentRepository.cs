@@ -32,7 +32,12 @@ namespace JourneyJot.Repository
 
         public bool Create(Comment entity)
         {
+            entity.Author = _context.Users.Where(u => u.Id == entity.AuthorId).FirstOrDefault();
+
+            entity.Post = _context.Posts.Where(p => p.Id == entity.PostId).FirstOrDefault();
+
             _context.Add(entity);
+
             return Save();
         }
 
