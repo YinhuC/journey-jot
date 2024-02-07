@@ -43,7 +43,7 @@ List any software, tools, or dependencies that users need to have installed.
 
 ## Usage
 
-- Create database using Microsoft SQL Server
+- Create database using SSMS
 - Update the `DefaultConnection` in `appSettings.json` with the correct information from your computer
 - Run migration to add data into database
   - `cd JourneyJot`
