@@ -43,10 +43,18 @@ List any software, tools, or dependencies that users need to have installed.
 
 ## Usage
 
-- Create database
+- Create database using Microsoft SQL Server
+- Update the `DefaultConnection` in `appSettings.json` with the correct information from your computer
 - Run migration to add data into database
+  - `cd JourneyJot`
+  - `dotnet run seeddata`
 - Run Project, test on Swagger UI
-- Build a front end and use the API
+- Build front end to use the API, Angular? Vue?
+
+## TODO
+- Authenication using JWT
+- Add Tests
+- Containerize using Docker
 
 ## License
 
