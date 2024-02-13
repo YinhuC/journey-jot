@@ -29,8 +29,6 @@ How to set up and run the project on a local machine.
 
 ### Prerequisites
 
-List any software, tools, or dependencies that users need to have installed.
-
 - [SQl Server](https://www.microsoft.com/en-nz/sql-server/sql-server-downloads)
 - [SQL Server Management Studio (SSMS)](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16)
 - Visual Studio, or Visual Studio Code
